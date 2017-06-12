@@ -13,7 +13,7 @@ public class CommentServiceImpl implements CommentService {
 	private CommentDao commentDaoImpl;
 	
 	@Override
-	public List<CommentDao> getCommentData(Map<String, Object> map) {
+	public List<Comment> getCommentData(Map<String, Object> map) {
 		// TODO Auto-generated method stub
 		return commentDaoImpl.getCommentData(map);
 	}

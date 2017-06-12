@@ -19,15 +19,6 @@
 				<th field="blogType" width="20%" align="center">博客类型</th>
 			</tr>
 		</thead>
-		<tbody>
-			<tr>
-				<td></td>
-				<td>编号</td>
-				<td>标题</td>
-				<td>发布日期</td>
-				<td>博客类型</td>
-			</tr>
-		</tbody>
 	</table>
 	<div id="tb">
 		&nbsp;标题&nbsp;<input class="easyui-textbox" size="20" name="s_text" id="s_title" onkeydown="if(event.keyCode==13) searchBlog()"/>

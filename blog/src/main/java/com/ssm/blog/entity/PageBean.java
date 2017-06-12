@@ -11,6 +11,11 @@ public class PageBean implements Serializable {
 	public PageBean() {
 		super();
 	}
+	public PageBean(int page, int pageSize) {
+		super();
+		this.page = page;//第几页
+		this.pageSize = pageSize;//每页记录数
+	}
 	public PageBean(int page, int pageSize, int start) {
 		super();
 		this.page = page;
@@ -30,10 +35,7 @@ public class PageBean implements Serializable {
 		this.pageSize = pageSize;
 	}
 	public int getStart() {
+		start = (page-1)*pageSize;
 		return start;
 	}
-	public void setStart(int start) {
-		this.start = start;
-	}
-	
 }

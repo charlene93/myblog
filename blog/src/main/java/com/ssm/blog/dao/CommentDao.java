@@ -8,7 +8,7 @@ import com.ssm.blog.entity.Comment;
 public interface CommentDao {
 	
 	// 获取评论信息
-	public List<CommentDao> getCommentData(Map<String, Object> map);
+	public List<Comment> getCommentData(Map<String, Object> map);
 
 	// 添加评论
 	public int addComment(Comment comment);

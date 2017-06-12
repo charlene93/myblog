@@ -20,16 +20,6 @@
 				<th field="commentDate" width="15%" align="center">评论日期</th>
 			</tr>
 		</thead>
-		<tbody>
-			<tr>
-				<td></td>
-				<td>编号test01</td>
-				<td>博客标题test01</td>
-				<td>用户的IPtest01</td>
-				<td>评论内容test01</td>
-				<td>评论日期test01</td>
-			</tr>
-		</tbody>
 	</table>
 	<div id="tb">
 		<a href="javascript:comRev(1)" class="easyui-linkbutton" data-options="iconCls:'icon-pass',plain:true">审核通过</a>
@@ -42,7 +32,7 @@
 			if(val==null){
 				return "<font color='red'>该博客已删除</font>"
 			} else{
-				return "<a href='${pageContext.request.contextPath}/admin/....'></a>"//跳转
+				return "<a href='${pageContext.request.contextPath}/blog/articles/"+val.id+".html' target='_blank'>"+val.title+"</a>";
 			}
 		}
 		
@@ -53,24 +43,34 @@
 				return;
 			}
 			
-			/* var ids=[];
+			var ids=[];
 			for (var i = 0; i < selectedRows.length; i++) {
 				ids.push(selectedRows[i].id);
 			}
-			var id=$.toJson(ids); */
+			var id=$.toJson(ids);
 			$.messager.confirm('确认',"<font color=red>您确定如此审核选中的"+selectedRows.length+"条数据么？</font>",function(result){    
 			    if (result){    
-			        alert('确认删除');    
+			    	$.ajax({
+						type : "post",
+						url : "admin/comment/review/"+state,
+						data : json,
+						contentType : "application/json",
+						asyn : true,
+						success : function(data) {
+							if(data.result!=0) {
+								$.messager.alert("系统提示", "评论删除成功！");
+								$("#dg").datagrid("reload");
+							} else {
+								$.messager.alert("系统提示", "评论删除失败！");
+							}
+						}
+					});
 			    }    
 			});
 		}
 		
 		function refreshComments(){
 			$("#dg").datagrid('reload');
-		}
-		
-		function printToExcel(){
-			
 		}
 	</script>
 </body>

@@ -16,7 +16,7 @@ public class CommentDaoImpl implements CommentDao {
 	private CommentMapper cm;
 
 	@Override
-	public List<CommentDao> getCommentData(Map<String, Object> map) {
+	public List<Comment> getCommentData(Map<String, Object> map) {
 		return cm.getCommentData(map);
 	}
 
