@@ -2,6 +2,9 @@ package com.ssm.blog.service.impl;
 
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
+
 import org.springframework.stereotype.Service;
 import com.ssm.blog.dao.BlogDao;
 import com.ssm.blog.entity.Blog;
@@ -9,11 +12,11 @@ import com.ssm.blog.service.BlogService;
 
 @Service
 public class BlogServiceImpl implements BlogService {
-
+	@Resource
 	private BlogDao blogDaoImpl;
 
 	@Override
-	public List<String> getBlogData() {
+	public List<Blog> getBlogData() {
 		return blogDaoImpl.getBlogData();
 	}
 

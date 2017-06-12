@@ -157,10 +157,10 @@
 				<input class="easyui-textbox" name="username" style="width:100%" value="chencharlie" data-options="label:'用户名'" readonly="readonly"/>
 			</div>
 			<div style="margin-bottom:20px">
-				<input id="pwd" class="easyui-textbox" name="password" style="width:100%" data-options="label:'新密码',required:true"/>
+				<input id="password" class="easyui-textbox" name="password" style="width:100%" data-options="label:'新密码',required:true"/>
 			</div>
 			<div style="margin-bottom:20px">
-				<input id="confirmPwd" class="easyui-textbox" name="password" style="width:100%" data-options="label:'确认密码',required:true"/>
+				<input id="password2" class="easyui-textbox" name="password2" style="width:100%" data-options="label:'确认密码',required:true"/>
 			</div>
 		</form>
 		<div style="text-align:center;padding:5px 0">
@@ -170,22 +170,30 @@
 	</div>
 	<script type="application/javascript">
 		function modifyPassword(){
-			
-			var $pwd=$("#pwd").val();
-			var $confirmPwd=$("#confirmPwd").val();
-			if($pwd==null||$pwd==""||$confirmPwd==null||$confirmPwd==""){
-				$.messager.alert("系统提示","不能为空!,请输入数据");
-			}else{
-				if($pwd==$confirmPwd){
-					/* $.ajax({
-					
-					}); */
-					$.messager.alert("系统提示","修改成功！下次登录生效");
-					closeModifyPwdDialog();
-				}else{
-					$.messager.alert("系统提示","两次密码不一致!");
+			$("#fm").form("submit",{
+				url: "${pageContext.request.contextPath}/admin/blogger/modifyPassword",
+				onSubmit: function() {
+					var newPassword = $("#password").val();
+					var newPassword2 = $("#password2").val();
+					if(!$(this).form("validate")) {
+						return false; //验证不通过直接false，即没填
+					} 
+					if(newPassword != newPassword2) {
+						$.messager.alert("系统提示", "两次密码必须填写一致");
+						return false
+					}
+					return true;
+				}, //进行验证，通过才让提交
+				success: function(data) {
+					if(data.result>0) {
+						$.messager.alert("系统提示", "密码修改成功，下一次登陆生效");
+						closePasswordModifyDialog();
+					} else {
+						$.messager.alert("系统提示", "密码修改失败");
+						return;
+					} 
 				}
-			}
+			});
 		}
 		
 		// 关闭修改密码的对话框
@@ -220,6 +228,22 @@
                     "iconCls": icon
                 });
     		}
+    	}
+    	
+    	function refreshSysCache(){
+    		$.ajax({
+				type : "post",
+				url : "admin/system/refreshSystemCache",
+				contentType : "application/json",
+				asyn : true,
+				success : function(data) {
+					if(data.success){
+						$.messager.alert("系统提示","已成功刷新系统缓存！");
+					}else{
+						$.messager.alert("系统提示","刷新系统缓存失败！");
+					}
+				}
+			});
     	}
 	</script>
 </body>

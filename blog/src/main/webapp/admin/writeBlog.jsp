@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -26,14 +27,11 @@
 		<tr>
 			<td>博客类型:</td>
 			<td>
-				<select name="type" class="easyui-combobox" style="width:154px" editable="false" panelHeight="auto">
-					<option value="">请选择博客类型</option>
-					<option value="C/C++">C/C++</option>
-					<option value="Java">Java</option>
-					<option value="MySQL">MySQL</option>
-					<option value="Android">Android</option>
-					<option value="PHP">PHP</option>
-					<option value="Python">Python</option>
+				<select id="blogTypeId" name="blogType.id" class="easyui-combobox" style="width:154px" editable="false" panelHeight="auto">
+					<option value="">请选择博客类型...</option>
+					<c:forEach items="${blogTypeList }" var="blogType">
+						<option value="${blogType.id }">${blogType.typeName }</option>
+					</c:forEach>
 				</select>
 			</td>
 		</tr>
@@ -65,7 +63,35 @@
 </div>
 <script type="text/javascript">
 	function submitBlogData(){
-		
+		var title = $("#title").val();
+		var blogTypeId = $("#blogTypeId").combobox("getValue");//获取下拉框被选中的项
+		var content = UE.getEditor('editor').getContent();
+		var summary = UE.getEditor('editor').getContentTxt().substr(0, 155);
+		var keyWord = $("#keyWord").val();
+		var contentNoTag = UE.getEditor('editor').getContentTxt();
+		if (title == null || title == '') {
+			$.messager.alert("系统提示", "请输入标题！");
+		} else if (blogTypeId == null || blogTypeId == '') {
+			$.messager.alert("系统提示", "请选择博客类型！");
+		} else if (content == null || content == '') {
+			$.messager.alert("系统提示", "请编辑博客内容！");
+		} else {
+			$.post("${pageContext.request.contextPath}/admin/blog/save",
+			{
+				'title' : title,
+				'blogType.id' : blogTypeId,
+				'content' : content,
+				'summary' : summary,
+				'keyWord' : keyWord,
+				'contentNoTag' : contentNoTag
+			}, function(data) {
+				if (data.result>0) {
+					$.messager.alert("系统提示", "博客修改成功！");
+				} else {
+					$.messager.alert("系统提示", "博客修改失败！");
+				}
+			}, "json");
+		}
 	}
 </script>
 </body>

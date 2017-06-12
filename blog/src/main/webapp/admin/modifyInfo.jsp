@@ -69,8 +69,42 @@
 </div>
 <script type="text/javascript">
 	function submitBlogerInfo(){
-		
+		$("#fm").form("submit",{
+			url: "${pageContext.request.contextPath}/admin/blogger/save",
+			onSubmit: function() {
+				var profile = UE.getEditor("profile").getContent();
+				$("#pf").val(profile); //将UEditor编辑器中的内容放到隐藏域中提交到后台
+				return $(this).form("validate");
+			}, //进行验证，通过才让提交
+			success: function(data) {
+				if(data.result>0) {
+					$.messager.alert("系统提示", "博主信息更新成功");
+				} else {
+					$.messager.alert("系统提示", "博主信息更新失败");
+					return;
+				} 
+			}
+		});
 	}
+</script>
+<%-- 实例化编辑器 --%>
+<script type="text/javascript">
+	var ue = UE.getEditor('profile');
+	ue.addListener("ready", function(){
+		//通过UE自己封装的ajax请求数据
+		UE.ajax.request("${pageContext.request.contextPath}/admin/blogger/findBlogger",
+		{
+			method: "post",
+			async: false,
+			/* data: {}, */
+			onsuccess: function(data) {
+				var result=data.blogger
+				$("#nickname").val(result.nickname);
+				$("#sign").val(result.sign);
+				UE.getEditor('profile').setContent(result.profile);
+			}
+		});
+	});
 </script>
 </body>
 </html>

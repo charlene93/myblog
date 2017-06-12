@@ -21,9 +21,9 @@ import com.ssm.blog.service.CommentService;
 public class CommentAdminController {
 
 	@Resource
-	private CommentService commentServiceImpl;
+	private CommentService commentService;
 
-	@RequestMapping("/listComment/{page}/{rows}/{state}")
+	@RequestMapping(value="/listComment/{page}/{rows}/{state}",produces = { "application/json;charset=utf-8" })
 	public @ResponseBody Map<String, Object> listBlog(@PathVariable("page") Integer page,
 			@PathVariable("rows") Integer rows, @PathVariable("state") Integer state) throws Exception {
 		PageBean pageBean = new PageBean(page, rows);
@@ -32,8 +32,8 @@ public class CommentAdminController {
 		map.put("start", pageBean.getStart());// 起始页
 		map.put("pageSize", pageBean.getPageSize());// 每页记录数
 		map.put("state", state);
-		List<Comment> commentList = commentServiceImpl.getCommentData(map);
-		Long total = commentServiceImpl.getTotal(map);
+		List<Comment> commentList = commentService.getCommentData(map);
+		Long total = commentService.getTotal(map);
 		map.put("datas", commentList);
 		map.put("total", total);
 		return map;
@@ -50,7 +50,7 @@ public class CommentAdminController {
 			comment = new Comment();
 			comment.setId(ids[i]);
 			comment.setState(state);
-			result = commentServiceImpl.update(comment);
+			result = commentService.update(comment);
 		}
 		map.put("result", result);
 		return map;
@@ -62,7 +62,7 @@ public class CommentAdminController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int result = 0;
 		for (int i = 0; i < ids.length; i++) {
-			result = commentServiceImpl.deleteComment(ids[i]);
+			result = commentService.deleteComment(ids[i]);
 		}
 		map.put("result", result);
 		return map;

@@ -30,16 +30,66 @@
 	</div>
 </body>
 <script type="text/javascript">
+//page:当前的页码
+// rows:每页显示的条数
+function paging(page, rows) {
+	var uri="admin/blog/listBlog/"+page+"/"+rows;
+	$.ajax({
+		type : 'GET',
+		url : 	uri,
+		contentType : "application/json",
+		async : true,
+		success : function(data) {
+			$('#dg').datagrid({
+				data : data.datas,
+				pageList : [ 5, 10 ],
+			});
+			var p = $("#dg").datagrid("getPager");
+			$(p).pagination({
+				total : data.total,
+				pageNumber : data.page,
+				pageSize : data.pageSize,
+				onSelectPage : function(pageNumber, pageSize) {
+					$(this).pagination('loading');
+					paging(pageNumber, pageSize);
+					$(this).pagination('loaded');
+				}
+			});
+		}
+	});
+}
+
+paging(1, 5);
+
+
 function deleteBlog(){
 	var selectedRows=$("#dg").datagrid("getSelections");
 	if(selectedRows.length==0){
 		$.messager.alert('系统提示','至少选择一个需要被删除的数据');
 		return;
 	}
-	
+	var ids=[];
+	for (var i = 0; i < selectedRows.length; i++) {
+		ids.push(selectedRows[id].id);
+	}
+	var json=$.toJson(ids);
 	$.messager.confirm('确认',"<font color=red>您确定要删除选中的"+selectedRows.length+"条数据么？</font>",function(result){    
 	    if (result){    
-	        alert('确认删除');    
+	    	$.ajax({
+				type : "post",
+				url : "admin/link/deleteBlog",
+				data : json,
+				contentType : "application/json",
+				asyn : true,
+				success : function(data) {
+					if(data.result>0) {
+						$.messager.alert("系统提示", "评论删除成功！");
+						$("#dg").datagrid("reload");
+					} else {
+						$.messager.alert("系统提示", "评论删除失败！");
+					}
+				}
+			});    
 	    }    
 	});  
 

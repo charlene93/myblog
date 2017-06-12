@@ -16,7 +16,7 @@
     	<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
    
-   	<!-- 开启springmvc注解支持 -->
+   	<!-- 开启springmvc注解支持 --><!-- 配置注解映射器和注解适配器 -->
    	<mvc:annotation-driven conversion-service="tc"/>
    	
    	<mvc:resources location="/static/" mapping="/static/**"></mvc:resources>
@@ -29,6 +29,16 @@
     		</set>
     	</property>
     </bean>
+    <!-- 配置一个文件上传解析器,此ID是固定的，无法改变的 -->
+	<bean id="multipartResolver" 
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 单位是byte,例如：10M=10*1024*1024 当设值为：-1时表示不限制容量 -->
+		<property name="maxUploadSize" value="-1" />
+		<!-- 默认字符集编码 -->
+		<property name="defaultEncoding" value="utf-8"></property>
+		<!-- 每次读取文件时，最大的内存容量 -->
+		<property name="maxInMemorySize" value="1024"></property>
+	</bean>
 	
     <!-- 配置一个试图解析器ViewResolver(应用控制器) --> 
     <bean id="internalResourceViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">

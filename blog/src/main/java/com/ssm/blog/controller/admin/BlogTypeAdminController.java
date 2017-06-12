@@ -19,9 +19,9 @@ import com.ssm.blog.service.BlogTypeService;
 @RequestMapping("/admin/blogType")
 public class BlogTypeAdminController {
 	@Resource
-	private BlogTypeService blogTypeServiceImpl;
+	private BlogTypeService blogTypeService;
 	@Resource
-	private BlogService blogServiceImpl;
+	private BlogService blogService;
 
 	// 分页显示数据
 	@RequestMapping(value = "/listBlogType/{page}/{rows}", produces = { "application/json;charset=utf-8" })
@@ -32,8 +32,8 @@ public class BlogTypeAdminController {
 		map.put("page", pageBean.getPage());// 第几页
 		map.put("start", pageBean.getStart());// 起始页
 		map.put("pageSize", pageBean.getPageSize());// 每页记录数
-		List<BlogType> blogTypeList = blogTypeServiceImpl.listBlogType(map);
-		Long total = blogServiceImpl.getTotal(map);// 总记录数
+		List<BlogType> blogTypeList = blogTypeService.listBlogType(map);
+		Long total = blogService.getTotal(map);// 总记录数
 		map.put("datas", blogTypeList);// 总数据
 		map.put("total", total);
 		return map;
@@ -45,9 +45,9 @@ public class BlogTypeAdminController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int result = 0;
 		if (blogType.getId() == null) {
-			result = blogTypeServiceImpl.addBlogType(blogType);
+			result = blogTypeService.addBlogType(blogType);
 		} else {
-			result = blogTypeServiceImpl.updateBlogType(blogType);
+			result = blogTypeService.updateBlogType(blogType);
 		}
 		map.put("result", result);
 		return map;
@@ -59,10 +59,10 @@ public class BlogTypeAdminController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int result = 0;
 		for (int i = 0; i < ids.length; i++) {
-			if (blogServiceImpl.getBlogByTypeId(ids[i]) > 0) {
+			if (blogService.getBlogByTypeId(ids[i]) > 0) {
 				map.put("exist", "该类别下有博客，不能删除!");
 			} else {
-				result = blogTypeServiceImpl.deleteBlogType(ids[i]);
+				result = blogTypeService.deleteBlogType(ids[i]);
 			}
 		}
 		map.put("result", result);

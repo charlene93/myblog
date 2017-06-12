@@ -19,7 +19,7 @@ import com.ssm.blog.service.LinkService;
 public class LinkAdminController {
 
 	@Resource
-	private LinkService linkServiceImpl;
+	private LinkService linkService;
 
 	// 分页显示数据
 	@RequestMapping(value = "/listBlogType/{page}/{rows}", produces = { "application/json;charset=utf-8" })
@@ -30,32 +30,32 @@ public class LinkAdminController {
 		map.put("page", pageBean.getPage());// 第几页
 		map.put("start", pageBean.getStart());// 起始页
 		map.put("pageSize", pageBean.getPageSize());// 每页记录数
-		List<Link> linkList = linkServiceImpl.listLinkData(map);
-		Long total = linkServiceImpl.getTotal(map);// 总记录数
+		List<Link> linkList = linkService.listLinkData(map);
+		Long total = linkService.getTotal(map);// 总记录数
 		map.put("datas", linkList);// 总数据
 		map.put("total", total);
 		return map;
 	}
 
-	@RequestMapping("/save")
+	@RequestMapping(value = "/save", produces = { "application/json;charset=utf-8" })
 	public @ResponseBody Map<String, Object> save(Link link) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int result = 0;
 		if (link.getId() == null) {
-			result = linkServiceImpl.addLink(link);
+			result = linkService.addLink(link);
 		} else {
-			result = linkServiceImpl.updateLink(link);
+			result = linkService.updateLink(link);
 		}
 		map.put("result", result);
 		return map;
 	}
 
-	@RequestMapping("/deleteLink")
+	@RequestMapping(value = "/deleteLink", produces = { "application/json;charset=utf-8" })
 	public @ResponseBody Map<String, Object> deleteLink(@RequestBody Integer[] ids) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>();
 		int result = 0;
 		for (int i = 0; i < ids.length; i++) {
-			result = linkServiceImpl.deleteLink(ids[i]);
+			result = linkService.deleteLink(ids[i]);
 		}
 		map.put("result", result);
 		return map;

@@ -115,7 +115,7 @@
 		for(var i = 0; i < selectedRows.length; i++) {
 			ids.push(selectedRows[i].id);
 		}
-		
+		var json=$.toJson(ids);
 		$.messager.confirm('确认',"<font color=red>您确定要删除选中的"+selectedRows.length+"条数据么？</font>",function(result){    
 		    if (result){    
 		    	$.ajax({
@@ -140,7 +140,7 @@
 	// page:当前的页码
 	// rows:每页显示的条数
 	function paging(page, rows) {
-		var uri="admin/link/"+page+"/"+rows;
+		var uri="admin/link/listBlogType/"+page+"/"+rows;
 		$.ajax({
 			type : 'GET',
 			url : 	uri,
@@ -151,7 +151,6 @@
 					data : data.datas,
 					pageList : [ 5, 10 ],
 				});
-
 				var p = $("#dg").datagrid("getPager");
 				$(p).pagination({
 					total : data.total,

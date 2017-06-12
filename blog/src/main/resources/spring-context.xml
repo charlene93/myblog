@@ -52,10 +52,10 @@
 	
 	<!-- 第三步，配置SQL映射器的扫描 -->
 	<bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="com.ssm.blog.mapper"></property>
-		
+		<!-- 自动扫描mappers.xml文件 -->
+		<property name="basePackage" value="com.ssm.blog.mapper"/>
 		<!-- 将SQL映射与Session进行关联 -->
-		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
 	</bean>
 	
 	<!-- 配置事务管理器 -->

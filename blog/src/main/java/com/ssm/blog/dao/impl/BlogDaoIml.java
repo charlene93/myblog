@@ -14,7 +14,7 @@ public class BlogDaoIml implements BlogDao {
 	private BlogMapper bm;
 
 	@Override
-	public List<String> getBlogData() {
+	public List<Blog> getBlogData() {
 		return bm.getBlogData();
 	}
 

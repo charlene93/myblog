@@ -94,7 +94,7 @@ function reload() {
 			for (var i = 0; i < selectedRows.length; i++) {
 				ids.push(selectedRows[i].id);
 			}
-			var id=$.toJson(ids);
+			var json=$.toJson(ids);
 			$.messager.confirm('确认',"<font color=red>您确定要删除选中的"+selectedRows.length+"条数据么？</font>",function(result){    
 			    if (result){    
 			    	$.ajax({

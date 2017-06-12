@@ -8,7 +8,7 @@ import com.ssm.blog.entity.Blog;
 public interface BlogDao {
 	
 	// 获取博客信息，根据日期月份分组查询
-	public List<String> getBlogData();
+	public List<Blog> getBlogData();
 
 	// 分页查询博客
 	public List<Blog> listBlog(Map<String, Object> map);

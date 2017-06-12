@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -10,22 +11,22 @@
 <script type="text/javascript">
 	window.UEDITOR_HOME_URL = "${basePath }static/ueditor1_4_3_3/";
 	var ue=UE.getEditor('editor');
-	/* ue.addListener("ready", function(){
+	ue.addListener("ready", function(){
 		//通过UE自己封装的ajax请求数据
-		UE.ajax.request("${pageContext.request.contextPath}/admin/blog/findById.do",
-				{
-					method: "post",
-					async: false,
-					data: {"id":"${param.id}"},
-					onsuccess: function(result) { //根据id查询Blog，返回一个json格式的blog对象
-						result = eval("(" + result.responseText + ")");
-						$("#title").val(result.title);
-						$("#keyWord").val(result.keyWord);							
-						$("#blogTypeId").combobox("setValue", result.blogType.id);	
-						UE.getEditor('editor').setContent(result.content);
-					}
-				});
-	}); */
+		UE.ajax.request("${pageContext.request.contextPath}/admin/blog/findById",
+		{
+			method: "post",
+			async: false,
+			data: {"id":"${param.id}"},
+			onsuccess: function(data) { 
+				var result = data.datas;
+				$("#title").val(result.title);
+				$("#keyWord").val(result.keyWord);							
+				$("#blogTypeId").combobox("setValue", result.blogType.id);	
+				UE.getEditor('editor').setContent(result.content);
+			}
+		});
+	});
 </script>
 </head>
 <body style="margin:5px;font-family:'microsoft yahei'">
@@ -41,15 +42,11 @@
 		<tr>
 			<td>博客类型:</td>
 			<td>
-				<select name="type" class="easyui-combobox" style="width:160px" editable="false" panelHeight="auto">
-					<option value="">请选择博客类型</option>
-					<option value="C/C++">C/C++</option>
-					<option value="Java">Java</option>
-					<option value="MySQL">MySQL</option>
-					<option value="Android">Android</option>
-					<option value="PHP">PHP</option>
-					<option value="Python">Python</option>
-					<option value="JavaScript">JavaScript</option>
+				<select id="blogTypeId" name="blogType.id" class="easyui-combobox" style="width:160px" editable="false" panelHeight="auto">
+					<option value="">请选择博客类型...</option>
+					<c:forEach items="${blogTypeList }" var="blogType">
+						<option value="${blogType.id }">${blogType.typeName }</option>
+					</c:forEach>
 				</select>
 			</td>
 			<!-- <td></td> -->
@@ -78,7 +75,36 @@
 </div>
 <script type="text/javascript">
 	function submitBlogData(){
-		
+		var title = $("#title").val();
+		var blogTypeId = $("#blogTypeId").combobox("getValue");//获取下拉框被选中的项
+		var content = UE.getEditor('editor').getContent();
+		var summary = UE.getEditor('editor').getContentTxt().substr(0, 155);
+		var keyWord = $("#keyWord").val();
+		var contentNoTag = UE.getEditor('editor').getContentTxt();
+		if (title == null || title == '') {
+			$.messager.alert("系统提示", "请输入标题！");
+		} else if (blogTypeId == null || blogTypeId == '') {
+			$.messager.alert("系统提示", "请选择博客类型！");
+		} else if (content == null || content == '') {
+			$.messager.alert("系统提示", "请编辑博客内容！");
+		} else {
+			$.post("${pageContext.request.contextPath}/admin/blog/save",
+			{
+				'id': '${param.id}',
+				'title' : title,
+				'blogType.id' : blogTypeId,
+				'content' : content,
+				'summary' : summary,
+				'keyWord' : keyWord,
+				'contentNoTag' : contentNoTag
+			}, function(data) {
+				if (result.result>0) {
+					$.messager.alert("系统提示", "博客修改成功！");
+				} else {
+					$.messager.alert("系统提示", "博客修改失败！");
+				}
+			}, "json");
+		}
 	}
 	//确认修改完成文本内容框必须置空
 	function clearValue(){
