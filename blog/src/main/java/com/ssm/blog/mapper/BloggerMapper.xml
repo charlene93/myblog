@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.blog.mapper.BloggerMapper">
+	<!-- 
+		private Integer id;
+		private String username;//姓名
+		private String password;//密码
+		private String profile;//博客信息
+		private String nickname;//博主昵称
+		private String sign;//博主签名
+		private String imagename;//头像路劲
+	 -->
+	<resultMap type="Blogger" id="bloggerMap">
+		<id property="id" column="id"/>
+		<result property="username" column="username"/>
+		<result property="password" column="password"/>
+		<result property="profile" column="profile"/>
+		<result property="nickname" column="nickname"/>
+		<result property="sign" column="sign"/>
+		<result property="imagename" column="imagename"/>
+	</resultMap>
+	
+	<select id="getByUsername" parameterType="java.lang.String" resultMap="bloggerMap">
+		select * from t_blogger where username=#{username}
+	</select>
+	
+	<select id="getBloggerData" resultMap="bloggerMap">
+		select * from t_blogger where id=1
+	</select>
+	
+	<!-- updateBlogger -->
+	<update id="updateBlogger" parameterType="BlogType">
+		update t_blogger
+		<set>
+			<if test="b.username!=null and b.username!=''">
+				username=#{b.username},
+			</if>
+			<if test="b.password!=null and b.password!=''">
+				password=#{b.password},
+			</if>
+			<if test="b.profile!=null and b.profile!=''">
+				profile=#{b.profile},
+			</if>
+			<if test="b.nickname!=null and b.nickname!=''">
+				nickname=#{b.nickname},
+			</if>
+			<if test="b.sign!=null and b.sign!=''">
+				sign=#{b.sign},
+			</if>
+			<if test="b.imagename!=null and b.imagename!=''">
+				imagename=#{b.imagename},
+			</if>
+		</set>
+		where id=#{b.id}
+	</update>
+	
+</mapper>

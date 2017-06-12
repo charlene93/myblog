@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+	http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+
+	<!-- 启动Spring大容器，将Spring容器内的内容纳入到WEB容器中 -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>classpath:spring-context.xml</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+	<!-- 关于处理HTTP请求中文乱码的过滤器 -->
+	<filter>
+		<filter-name>characterEncodingFilter</filter-name>
+		<filter-class>com.ssm.blog.filter.EncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>characterEncodingFilter</filter-name>
+		<servlet-name>spring</servlet-name>
+	</filter-mapping>
+
+	<!-- rest架构风格中，form提交时，将POST请求修改为PUT/DELETE -->
+	<!-- <filter>
+		<filter-name>HttpMethodFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>HttpMethodFilter</filter-name>
+		<servlet-name>spring</servlet-name>
+	</filter-mapping> -->
+
+	<!-- rest架构风格中，form提交时，将参数修改为支持PUT/DELETE提交 -->
+	<!-- <filter>
+		<filter-name>httpPutFormContentFilter</filter-name>
+		<filter-class>org.springframework.web.filter.HttpPutFormContentFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>httpPutFormContentFilter</filter-name>
+		<servlet-name>spring</servlet-name>
+	</filter-mapping> -->
+
+	<!-- 配置前端控制器 -->
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring-servlet.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+        <async-supported>true</async-supported>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<!-- 在DispatcherServlet中/代表所有，其他地方都是/* -->
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+</web-app>

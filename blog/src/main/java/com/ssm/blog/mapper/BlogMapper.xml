@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssm.blog.mapper.BlogMapper">
+	<!-- 
+		private Integer id;
+		private String title;
+		private String summary;
+		private Date releaseDate;
+		private Integer clickHit;
+		private Integer replyHit;
+		private String content;
+		private String contentNoTag;// 不带标签的博客内容，用于Lucene索引中
+		private String keyWord; // 关键字，用空格隔开
+		private BlogType blogType; // 博客类型
+		private Integer blogCount;// 博客数量，非博客实际属性，用于根据发布日期归档查询
+		private String releaseDateStr;// 发布日期的字符串，只取年月
+		private List<String> imageList = new LinkedList<String>();// 博客里存的图片，主要用于展示缩略图
+	 -->
+	<resultMap type="Blog" id="blogMap">
+		<id property="id" column="id"/>
+		<result property="title" column="title"/>
+		<result property="summary" column="summary"/>
+		<result property="releaseDate" column="releaseDate"/>
+		<result property="clickHit" column="clickHit"/>
+		<result property="replyHit" column="replyHit"/>
+		<result property="content" column="content"/>
+		<result property="keyWord" column="keyWord"/>
+		<association property="blogType" column="type_id" select="com.ssm.blog.mapper.BlogTypeMapper.findById">
+		</association>
+	</resultMap>
+	
+	<select id="getBlogData" resultMap="blogMap">
+		select data_format(releaseDate,'%Y年%m月') as releaseDateStr,
+		count(*) as blogCount
+		from t_blog
+		Group by DATE_FORMAT(releaseDate,'%Y年%m月')
+		ORDER BY releaseDate DESC
+	</select>
+	
+	<select id="listBlog" parameterType="java.util.Map" resultMap="blogMap">
+		select * from t_blog
+		<include refid="commonSql"></include>
+		order by releaseDate DESC
+		<if test="map.start!=null and map.pageSize!=null">
+			limit #{map.start},#{map.pageSize}
+		</if>
+	</select>
+	
+	<select id="getTotal" parameterType="java.util.Map">
+		select count(*) from t_blog
+		<include refid="commonSql"></include>
+	</select>
+	<sql id="commonSql">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="map.title!=null and map.title!=''">
+				and title like #{map.title},
+			</if>
+			<if test="map.typeId!=null and map.typeId!=''">
+				and typeId = #{map.typeId}
+			</if>
+			<if test="map.releaseDateStr!=null and map.releaseDateStr!=''">
+				and DATE_FORMAT(releaseDate,'%Y年%m月')=#{map.releaseDateStr}
+			</if>
+		</trim>
+	</sql>
+	
+	<select id="findById" resultMap="blogMap">
+		select * from t_blog where id=#{id}
+	</select>
+	
+	<update id="update" parameterType="Blog">
+		update t_blog
+		<set>
+			<if test="b.title!=null and b.title!=''">
+				title=#{b.title}
+			</if>
+			<if test="b.summary!=null and b.summary!=''">
+				summary=#{b.summary}
+			</if>
+			<if test="content!=null and content!=''">
+		 		content=#{content},
+		 	</if>
+		 	<if test="b.blogType.id!=null">
+				type_id=#{blogType.id},
+			</if>
+			<if test="b.clickHit!=null">
+				clickHit=#{clickHit},
+			</if>
+			<if test="b.replyHit!=null">
+				replyHit=#{replyHit},
+			</if>
+			<if test="b.keyWord!=null and b.keyWord!=''">
+		 		keyWord=#{keyWord},
+		 	</if>
+		</set>
+		where id=#{b.id}
+	</update>
+	
+	<select id="getPrevBlog" resultMap="blogMap">
+		select * from t_blog where id&lt;#{id} order by id desc limit 1
+	</select>
+	<select id="getNextBlog" resultMap="blogMap">
+		select * from t_blog where id&gt;#{id} order by id desc limit 1
+	</select>
+	<insert id="addBlog" parameterType="Blog" keyProperty="id" useGeneratedKeys="true">
+		insert into t_blog(null,#{b.title},#{b.summary},now(),0,0,#{b.content},#{b.keyWord},#{blogType.id})
+	</insert>
+	<delete id="deleteBlog" parameterType="java.lang.Integer">
+		delete from t_blog where id=#{id}
+	</delete>
+</mapper>
