@@ -53,44 +53,8 @@
 		<a href="javascript:save()" class="easyui-linkbutton" iconCls="icon-confirm">保存</a>
 		<a href="javascript:$('#dlg').dialog('close')" iconCls="icon-cancel" class="easyui-linkbutton">取消</a>
 	</div>
-	<script>
-	function save(){
-		var $linkname=$("#linkname").val();
-		var $linkurl=$("#linkurl").val();
-		var $order=$("#order").val();
-		if($linkname!=""&&$linkurl!=""&&$order!=""){
-			/* var json=$.toJson(blogTypeData);
-			// ajax提交数据如果添加成功就有提示对话框，提示添加成功，否则添加失败
-			$.ajax({
-				type:"post",
-				url:"${pageContext.request.contextPath}/admin/addLink"
-				data:json,
-				contentType:"application/json",
-				async:true,
-				success:function(data){
-					
-				}
-			}); */
-		}else{
-			$.messager.alert("系统提示","不能有空数据");
-		}
-	}
-	
-	
-	function deleteLink(){
-		var selectedRows=$("#dg").datagrid("getSelections");
-		if(selectedRows.length==0){
-			$.messager.alert('系统提示','至少选择一个需要被删除的数据');
-			return;
-		}
-		
-		$.messager.confirm('确认',"<font color=red>您确定要删除选中的"+selectedRows.length+"条数据么？</font>",function(result){    
-		    if (result){    
-		        alert('确认删除');    
-		    }    
-		});  
-
-	}
+<script>
+	var url
 	// 打开修改操作的对话框
 	function openEditDialog(){
 		//var selectedRow==$("#dg").datagrid("getSelected") //取得选中行数据：
@@ -107,8 +71,8 @@
 		});
 		var row=selectedRows[0];
 		$("#fm").form('load',row);
+		url="${pageContext.request.contextPath}/admin/link/save?"+row.id
 	}
-	
 	
 	//打开添加操作的对话框
 	function openAddDialog(){
@@ -117,7 +81,99 @@
 			iconCls:"icon-add",
 			closed:false
 		});
+		url="${pageContext.request.contextPath}/admin/link/save"
 	}
-	</script>
+	
+	function save(){
+		$("#fm").form("submit",{
+			url: url,
+			onSubmit: function() {
+				return $(this).form("validate");
+			}, //进行验证，通过才让提交
+			success: function(data) {
+				if(data.result>0) {
+					$.messager.alert("系统提示", "友情链接保存成功");
+					closeLinkDialog();
+					$("#dg").datagrid("reload"); //刷新一下
+				} else {
+					$.messager.alert("系统提示", "友情链接保存失败");
+					return;
+				} 
+			}
+		});
+	}
+	
+	
+	function deleteLink(){
+		var selectedRows=$("#dg").datagrid("getSelections");
+		if(selectedRows.length==0){
+			$.messager.alert('系统提示','至少选择一个需要被删除的数据');
+			return;
+		}
+		
+		var ids = [];
+		for(var i = 0; i < selectedRows.length; i++) {
+			ids.push(selectedRows[i].id);
+		}
+		
+		$.messager.confirm('确认',"<font color=red>您确定要删除选中的"+selectedRows.length+"条数据么？</font>",function(result){    
+		    if (result){    
+		    	$.ajax({
+					type : "post",
+					url : "admin/link/deleteLink",
+					data : json,
+					contentType : "application/json",
+					asyn : true,
+					success : function(data) {
+						if(data.result>0) {
+							$.messager.alert("系统提示", "评论删除成功！");
+							$("#dg").datagrid("reload");
+						} else {
+							$.messager.alert("系统提示", "评论删除失败！");
+						}
+					}
+				});   
+		    }    
+		});  
+	}
+	
+	// page:当前的页码
+	// rows:每页显示的条数
+	function paging(page, rows) {
+		var uri="admin/link/"+page+"/"+rows;
+		$.ajax({
+			type : 'GET',
+			url : 	uri,
+			contentType : "application/json",
+			async : true,
+			success : function(data) {
+				$('#dg').datagrid({
+					data : data.datas,
+					pageList : [ 5, 10 ],
+				});
+
+				var p = $("#dg").datagrid("getPager");
+				$(p).pagination({
+					total : data.total,
+					pageNumber : data.page,
+					pageSize : data.pageSize,
+					onSelectPage : function(pageNumber, pageSize) {
+						$(this).pagination('loading');
+						paging(pageNumber, pageSize);
+						$(this).pagination('loaded');
+					}
+				});
+			}
+		});
+	}
+	
+	paging(1, 5);
+	
+	
+	
+	function reload() {
+		$("#dg").datagrid("reload");
+	}
+</script>
 </body>
 </html>
